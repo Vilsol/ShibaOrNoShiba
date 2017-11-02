@@ -312,19 +312,34 @@ def serve():
 
       results = {}
 
+      prediction = {
+        "shiba": 0,
+        "doggo": 0,
+        "random": 0
+      }
+
       for name, model in models.items():
-        prediction = model.predict(np.array([image]))
+        model_prediction = model.predict(np.array([image]))
 
         results[name] = {
-          "shiba": float(prediction[0][0]),
-          "doggo": float(prediction[0][1]),
-          "random": float(prediction[0][2])
+          "shiba": float(model_prediction[0][0]),
+          "doggo": float(model_prediction[0][1]),
+          "random": float(model_prediction[0][2])
         }
 
-      print("Prediction:", results)
+        prediction['shiba'] += float(model_prediction[0][0])
+        prediction['doggo'] += float(model_prediction[0][1])
+        prediction['random'] += float(model_prediction[0][2])
+
+      prediction['shiba'] /= len(models)
+      prediction['doggo'] /= len(models)
+      prediction['random'] /= len(models)
+
+      print("Prediction:", prediction)
 
       response = {
         "success": True,
+        "prediction": prediction,
         "predictions": results
       }
 
